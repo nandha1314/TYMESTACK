@@ -44,12 +44,8 @@ jobs:
       with:
         script: |
           github.issues.createComment({
-            issue_number: 1,
+            issue_number: 1,   
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: ":tada: The workflow completed successfully!"
-<<<<<<< HEAD
           })
-=======
-          })
->>>>>>> b77f6d491d069edc025a3c43d2a67c4eec59d5ff
