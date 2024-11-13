@@ -1,57 +1,26 @@
-name: Model Retraining and Deployment Pipeline
-
+name: Upload to GCS
 on:
   push:
-    paths:
-      - "data/**"           # Trigger on changes in the data/ folder
-      - "src/**"            # Trigger on changes in the src/ folder
-      - "requirements.txt"  # Trigger on dependency updates
-
+    branches:
+      - main  # Triggers on push to main branch
+  pull_request:
+    branches:
+      - main
 jobs:
-  retrain:
+  upload-to-gcs:
     runs-on: ubuntu-latest
-
     steps:
-    # Step 1: Checkout the repository
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v2
-
-    # Step 2: Set up Python environment
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
       with:
-        python-version: '3.8'
-
-    # Step 3: Install dependencies
-    - name: Install dependencies
+        project_id: twilight-mlops-poc  # Project ID
+        service_account_key: ${{ secrets.MLOPS_KEY }}  # Secret containing the service account JSON key
+        export_default_credentials: true
+    - name: Upload Code to GCS
+      env:
+        GCS_BUCKET: gitmlopscode  # Your GCS bucket name
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    # Step 4: Train the base model
-    - name: Train Model
-      run: |
-        python src/train_model.py
-
-    # Step 5: Hyperparameter Tuning
-    - name: Hyperparameter Tuning
-      run: |
-        python src/hyperparameter_tuning.py
-
-    # Step 6: Model Evaluation
-    - name: Evaluate Model
-      run: |
-        python src/evaluate_model.py
-
-    # Step 7: Deploy the new model if it performs better
-    - name: Deploy Model if New Model is Better
-      if: success()
-      run: |
-        python src/deploy_model.py
-
-    # Step 8: Upload the best model as an artifact for backup
-    - name: Upload Model Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: latest_model
-        path: models/previous_model.joblib
+        # Upload all files in the repository to the specified GCS bucket
+        gsutil -m rsync -r . "gs://${GCS_BUCKET}/project-code/"
