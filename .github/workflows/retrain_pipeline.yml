@@ -48,4 +48,8 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: ":tada: The workflow completed successfully!"
+<<<<<<< HEAD
           })
+=======
+          })
+>>>>>>> b77f6d491d069edc025a3c43d2a67c4eec59d5ff
