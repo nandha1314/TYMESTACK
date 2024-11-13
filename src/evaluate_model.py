@@ -23,4 +23,4 @@ print(f"New Model MSE: {new_mse}, Previous Model MSE: {previous_mse}")
 if new_mse < previous_mse:
     print("New model is better.")
 else:
-    print("Previous model is betTter.")
+    print("Previous model is better.")
